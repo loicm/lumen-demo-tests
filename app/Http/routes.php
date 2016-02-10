@@ -11,6 +11,23 @@
 |
 */
 
-$app->get('/', function () use ($app) {
-    return $app->version();
-});
+$app->get('/article', [
+  'uses' => 'ArticleController@getArticles',
+  'as' => 'allArticles'
+]);
+$app->get('/article/{id}', [
+  'uses' => 'ArticleController@getArticle',
+  'as' => 'singleArticle'
+]);
+$app->post('/article', [
+  'uses' => 'ArticleController@saveArticle',
+  'as' => 'saveArticle'
+]);
+$app->put('/article/{id}', [
+  'uses' => 'ArticleController@updateArticle',
+  'as' => 'updateArticle'
+]);
+$app->delete('/article/{id}', [
+  'uses' => 'ArticleController@deleteArticle',
+  'as' => 'deleteArticle'
+]);
