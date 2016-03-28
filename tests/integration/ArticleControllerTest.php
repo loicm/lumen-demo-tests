@@ -37,4 +37,35 @@ class ArticleControllerTest extends TestCase
         # 3. Réaliser les assertions
         $this->seeStatusCode(404);
     }
+
+    /** @test */
+    public function it_stores_a_new_article()
+    {
+        # 1. Mettre en place le contexte
+        $article = factory(App\Article::class)->make();
+
+        # 2. Effectuer l'appel sur l'API
+        $this->post('/article', [
+            'title' => $article->title,
+            'description' => $article->description,
+        ]);
+
+        # 3. Réaliser les assertions
+        $this->seeJson([
+            'title' => $article->title,
+            'description' => $article->description
+        ]);
+        $this->seeJsonStructure([
+            'id',
+        ]);
+
+        $returned_article = json_decode($this->response->getContent());
+        $this->seeInDatabase('articles', [
+            'id' => $returned_article->id,
+            'title' => $article->title,
+            'description' => $article->description,
+        ]);
+
+        $this->assertEquals(1, App\Article::count());
+    }
 }
