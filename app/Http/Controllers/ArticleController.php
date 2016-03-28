@@ -23,7 +23,7 @@ class ArticleController extends Controller
 
     public function getArticle($id)
     {
-        $article = Article::find($id);
+        $article = Article::findorFail($id);
         return response()->json($article);
     }
 
