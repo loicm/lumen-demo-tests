@@ -95,4 +95,24 @@ class ArticleControllerTest extends TestCase
             'description' => $article->description,
         ]);
     }
+
+    /** @test */
+    public function it_deletes_an_article()
+    {
+        # 1. Mettre en place le contexte
+        $article = factory(App\Article::class)->create();
+        $article2 = factory(App\Article::class)->create();
+
+        # 2. Effectuer l'appel sur l'API
+        $this->delete('/article/' . $article->id);
+
+        # 3. Réaliser les assertions
+        $this->seeJson([
+            'success' => true,
+        ]);
+
+        $this->seeInDatabase('articles', [ 'id' => $article2->id ]);
+
+        $this->assertEquals(1, App\Article::count());
+    }
 }
