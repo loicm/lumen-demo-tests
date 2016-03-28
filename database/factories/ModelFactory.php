@@ -11,9 +11,9 @@
 |
 */
 
-$factory->define(App\User::class, function ($faker) {
+$factory->define(App\Article::class, function ($faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->email,
+        'title' => $faker->sentence,
+        'description' => $faker->text,
     ];
 });
