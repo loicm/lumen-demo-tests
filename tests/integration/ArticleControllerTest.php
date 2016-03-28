@@ -115,4 +115,56 @@ class ArticleControllerTest extends TestCase
 
         $this->assertEquals(1, App\Article::count());
     }
+
+    /** @test */
+    public function it_returns_articles_with_pagination()
+    {
+        # 1. Mettre en place le contexte
+        $articles = factory(App\Article::class, 5)->create();
+
+        for ($i = 1; $i <= 5; $i++) {
+            # 2. Effectuer l'appel sur l'API
+            $this->get('/article?page=' . $i);
+
+            # 3. Réaliser les assertions
+            $this->seeStatusCode(200);
+
+            $this->seeJson([
+                'total' => 5,
+                'per_page' => 1,
+                'current_page' => $i,
+                'last_page' => 5,
+            ]);
+
+            $returned_articles = json_decode($this->response->getContent(), true);
+            $this->assertEquals($articles[$i-1]->toArray() , $returned_articles['data'][0]);
+        }
+    }
+
+    /** @test */
+    public function it_returns_articles_with_search()
+    {
+        # 1. Mettre en place le contexte
+        $articles = factory(App\Article::class, 5)->create();
+        $article_test = factory(App\Article::class)->create([
+            'title' => 'Lumen test title',
+            'description' => 'Lumen test description',
+        ]);
+
+        # 2. Effectuer l'appel sur l'API
+        $this->get('/article?title=Lumen');
+
+        # 3. Réaliser les assertions
+        $this->seeStatusCode(200);
+
+        $this->seeJson([
+            'total' => 1,
+            'per_page' => 1,
+            'current_page' => 1,
+            'last_page' => 1,
+        ]);
+
+        $returned_articles = json_decode($this->response->getContent(), true);
+        $this->assertEquals($article_test->toArray() , $returned_articles['data'][0]);
+    }
 }
