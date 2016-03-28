@@ -68,4 +68,31 @@ class ArticleControllerTest extends TestCase
 
         $this->assertEquals(1, App\Article::count());
     }
+
+    /** @test */
+    public function it_can_updates_an_article()
+    {
+        # 1. Mettre en place le contexte
+        $article = factory(App\Article::class)->create();
+
+        $article->title = 'The title is updated';
+        $article->description = 'The description is updated';
+
+        # 2. Effectuer l'appel sur l'API
+        $this->put('/article/' . $article->id, [
+            'title' => $article->title,
+            'description' => $article->description,
+        ]);
+
+        # 3. Réaliser les assertions
+        $article_in_db = App\Article::find($article->id);
+        $this->assertEquals($article_in_db->title, $article->title);
+        $this->assertEquals($article_in_db->description, $article->description);
+
+        $this->seeJson([
+            'id' => $article->id,
+            'title' => $article->title,
+            'description' => $article->description,
+        ]);
+    }
 }
